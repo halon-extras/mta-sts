@@ -7,17 +7,20 @@ You can test it by running:
 $domain = "gmail.com";
 import { mta_sts } from "mta-sts/mta-sts.hsl";
 $mtasts = mta_sts($domain);
-if (is_array($mtasts) and $mtasts["mode"] == "enforce")
+if (is_array($mtasts))
 {
-	smtp_lookup_rcpt([
-		"host" => "lookup-mx",
-		"mx_include" => $mtasts["mx"],
-		"tls" => "require_verify",
-		"tls_sni" => true,
-		"tls_verify_host" => true,
-		"tls_default_ca" => true,
-		"tls_protocols" => "!SSLv2,!SSLv3,!TLSv1,!TLSv1.1"
-	], "", "test@$domain");
+	if ($mtasts["error"])
+		echo "Bad MTA-STS for $domain";
+	if ($mtasts["policy"]["mode"] == "enforce")
+		smtp_lookup_rcpt([
+			"host" => "lookup-mx",
+			"mx_include" => $mtasts["policy"]["mx"],
+			"tls" => "require_verify",
+			"tls_sni" => true,
+			"tls_verify_host" => true,
+			"tls_default_ca" => true,
+			"tls_protocols" => "!SSLv2,!SSLv3,!TLSv1,!TLSv1.1"
+		], "", "test@$domain");
 }
 else echo "No MTA-STS for $domain";
 ```
@@ -27,15 +30,18 @@ and it should normally be used in the [pre-delivery script](https://docs.halon.i
 ```
 import { mta_sts } from "mta-sts/mta-sts.hsl";
 $mtasts = mta_sts($message["recipientaddress"]["domain"]);
-if (is_array($mtasts) and $mtasts["mode"] == "enforce")
+if (is_array($mtasts))
 {
-	Try([
-		"mx_include" => $mtasts["mx"],
-		"tls" => "require_verify",
-		"tls_sni" => true,
-		"tls_verify_host" => true,
-		"tls_default_ca" => true,
-		"tls_protocols" => "!SSLv2,!SSLv3,!TLSv1,!TLSv1.1"
-	]);
+	if ($mtasts["error"])
+		Queue(["reason" => "Bad MTA-STS for $domain"]);
+	if ($mtasts["policy"]["mode"] == "enforce")
+		Try([
+			"mx_include" => $mtasts["policy"]["mx"],
+			"tls" => "require_verify",
+			"tls_sni" => true,
+			"tls_verify_host" => true,
+			"tls_default_ca" => true,
+			"tls_protocols" => "!SSLv2,!SSLv3,!TLSv1,!TLSv1.1"
+		]);
   ...
 ```

@@ -11,7 +11,7 @@ function mta_sts($policydomain)
 	{
 		// Fetch HTTPS policy (at most every 5 minutes)
 		$newpolicy = cache [ "ttl" => 300, "size" => 2048 ] mta_sts_fetch_https($policydomain);
-		if ($newpolicy)
+		if ($newpolicy["policy"])
 		{
 			$newpolicy["dnstxt"] = $dnstxt;
 			$cache->set($policydomain, $newpolicy, $newpolicy["max_age"]);
@@ -28,7 +28,7 @@ function mta_sts($policydomain)
 		return $cached;
 	}
 
-	return false;
+	return $cached;
 }
 
 function mta_sts_fetch_dnstxt($policydomain) {
@@ -52,14 +52,20 @@ function mta_sts_fetch_https($policydomain)
 		"connect_timeout" => 5,
 		"timeout" => 5,
 		"max_file_size" => 64 * 1024,
+		"extended_result" => true
 	]);
+	// XXX should report sts-webpki-invalid errors
+	if ($res["status"] != 200)
+		return ["error" => "Failed to fetch STS policy",
+			   "tlsrpt" => "sts-policy-fetch-error"];
 	// XXX senders SHOULD validate that the media type is "text/plain"
-	if (!is_string($res))
-		return;
-	$policy = mta_sts_parse_policy($res);
+	$policy = mta_sts_parse_policy($res["content"]);
 	if ($policy["version"] != "STSv1")
-		return;
-	return $policy;
+		return ["policy-string" => str_strip($res["content"]),
+				"error" => "Failed to parse STS policy",
+				"tlsrpt" => "sts-policy-invalid"];
+	return ["policy-string" => str_strip($res["content"]),
+			"policy" => $policy];
 }
 
 function mta_sts_parse_policy($policy)

@@ -28,7 +28,7 @@ function mta_sts($policydomain)
 		return $cached;
 	}
 
-	return $cached;
+	return false;
 }
 
 function mta_sts_fetch_dnstxt($policydomain) {

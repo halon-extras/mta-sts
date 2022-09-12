@@ -15,7 +15,7 @@ if (is_array($mtasts))
 		smtp_lookup_rcpt([
 			"host" => "lookup-mx",
 			"mx_include" => $mtasts["policy"]["mx"],
-			"tls" => "require_verify",
+			"tls" => "dane_fallback_require_verify",
 			"tls_sni" => true,
 			"tls_verify_host" => true,
 			"tls_default_ca" => true,
@@ -37,7 +37,7 @@ if (is_array($mtasts))
 	if ($mtasts["policy"]["mode"] == "enforce")
 		Try([
 			"mx_include" => $mtasts["policy"]["mx"],
-			"tls" => "require_verify",
+			"tls" => "dane_fallback_require_verify",
 			"tls_sni" => true,
 			"tls_verify_host" => true,
 			"tls_default_ca" => true,

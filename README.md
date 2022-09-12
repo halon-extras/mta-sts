@@ -33,7 +33,7 @@ $mtasts = mta_sts($message["recipientaddress"]["domain"]);
 if (is_array($mtasts))
 {
 	if ($mtasts["error"])
-		Queue(["reason" => "Bad MTA-STS for $domain"]);
+		Queue(["reason" => "Bad MTA-STS:" . $mtasts["error"]]);
 	if ($mtasts["policy"]["mode"] == "enforce")
 		Try([
 			"mx_include" => $mtasts["policy"]["mx"],

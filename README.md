@@ -1,11 +1,30 @@
-## SMTP MTA Strict Transport Security (MTA-STS) 
+# SMTP MTA Strict Transport Security (MTA-STS) 
 An MTA-STS implementation based on [rfc8461](https://tools.ietf.org/html/rfc8461).
+
+## Installation
+
+Follow the [instructions](https://docs.halon.io/manual/comp_install.html#installation) in our manual to add our package repository and then run the below command.
+
+### Ubuntu
+
+```
+apt-get install halon-extras-mta-sts
+```
+
+### RHEL
+
+```
+yum install halon-extras-mta-sts
+```
+
+## Usage
 
 You can test it by running:
 
 ```
+import { mta_sts } from "extras://mta-sts";
+
 $domain = "gmail.com";
-import { mta_sts } from "mta-sts/mta-sts.hsl";
 $mtasts = mta_sts($domain);
 if (is_array($mtasts))
 {
@@ -28,8 +47,9 @@ else echo "No MTA-STS for $domain";
 and it should normally be used in the [pre-delivery script](https://docs.halon.io/hsl/archive/master/predelivery.html) like
 
 ```
-import { mta_sts } from "mta-sts/mta-sts.hsl";
-import { tls_rpt } from "tls-rpt/tls-rpt.hsl";
+import { mta_sts } from "extras://mta-sts";
+import { tls_rpt } from "extras://tls-rpt";
+
 $mtasts = mta_sts($message["recipientaddress"]["domain"]);
 if (is_array($mtasts))
 {

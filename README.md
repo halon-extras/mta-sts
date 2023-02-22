@@ -48,7 +48,7 @@ and it should normally be used in the [pre-delivery script](https://docs.halon.i
 
 ```
 import { mta_sts } from "extras://mta-sts";
-import { tls_rpt } from "extras://tls-rpt";
+//import { tls_rpt } from "extras://tls-rpt";
 
 $mtasts = mta_sts($message["recipientaddress"]["domain"]);
 if (is_array($mtasts))
@@ -56,10 +56,10 @@ if (is_array($mtasts))
 	$context["sts"] = $mtasts;
 	if ($mtasts["error"])
 	{
-		if (tls_rpt_fetch_dnstxt($message["recipientaddress"]["domain"]))
-		{
-			tls_rpt([], $message, $mtasts);
-		}
+//		if (tls_rpt_fetch_dnstxt($message["recipientaddress"]["domain"]))
+//		{
+//			tls_rpt([], $message, $mtasts);
+//		}
 		Queue(["reason" => "Bad MTA-STS:" . $mtasts["error"]]);
 	}
 	if ($mtasts["policy"]["mode"] == "enforce")

@@ -48,7 +48,7 @@ and it should normally be used in the [pre-delivery script](https://docs.halon.i
 
 ```
 import { mta_sts } from "extras://mta-sts";
-//import { tls_rpt } from "extras://tls-rpt";
+//import { tls_rpt } from "extras://tls-rpt"; // not available yet
 
 $mtasts = mta_sts($message["recipientaddress"]["domain"]);
 if (is_array($mtasts))

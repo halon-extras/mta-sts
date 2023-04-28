@@ -32,7 +32,6 @@ if (is_array($mtasts))
 		echo "Bad MTA-STS for $domain";
 	if ($mtasts["policy"]["mode"] == "enforce")
 		smtp_lookup_rcpt([
-			"host" => "lookup-mx",
 			"mx_include" => $mtasts["policy"]["mx"],
 			"tls" => "dane_fallback_require_verify",
 			"tls_sni" => true,

@@ -72,3 +72,15 @@ if (is_array($mtasts))
 		]);
   ...
 ```
+
+and it should normally be used in the [post-delivery script](https://docs.halon.io/hsl/archive/master/postdelivery.html) like
+
+```
+if ($context["sts"]["policy"]["mode"] == "enforce" and
+	$arguments["attempt"]["error"]["type"] == "dns" and
+	$arguments["attempt"]["error"]["dns"] == "excluded" and
+	!$arguments["expired"])
+{
+	Queue();
+}
+```
